@@ -24,7 +24,7 @@ public class ScheduleScreen {
     public void show() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/schedule.fxml"));
-            VBox scheduleLayout = loader.load();
+            Parent scheduleLayout = loader.load();
             
             ScheduleController controller = loader.getController();
             controller.initData(stage, uid, activeSem);

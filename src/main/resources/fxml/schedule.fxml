@@ -2,48 +2,47 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
-<VBox spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ewumatelite.features.schedule.presentation.ScheduleController" styleClass="main-content-bg">
-    <padding>
-        <Insets top="20" right="30" bottom="20" left="30"/>
-    </padding>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ewumatelite.features.schedule.presentation.ScheduleController" style="-fx-background-color: #16202A;">
+    <VBox spacing="0">
+        <padding>
+            <Insets top="20" right="30" bottom="20" left="30"/>
+        </padding>
 
-    <!-- Header Section -->
-    <HBox alignment="CENTER_LEFT">
-        <VBox>
-            <Label text="Manage Schedule" styleClass="screen-title"/>
-            <Label text="View upcoming classes and pending events" styleClass="screen-subtitle"/>
+        <!-- Header Section -->
+        <VBox spacing="5" style="-fx-padding: 0 0 15 0;">
+            <Label text="Manage Schedule" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 24;"/>
+            <Label text="View upcoming classes and pending events" style="-fx-text-fill: #8A95A5; -fx-font-size: 14;"/>
         </VBox>
-    </HBox>
 
-    <TabPane VBox.vgrow="ALWAYS" styleClass="custom-tab-pane" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-            <Tab text="Upcoming">
-                <content>
-                    <VBox spacing="10">
-                        <padding>
-                            <Insets top="15"/>
-                        </padding>
-                        <Label text="Upcoming Schedule" styleClass="section-header"/>
-                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
-                            <VBox fx:id="upcomingListContainer" spacing="10"/>
-                        </ScrollPane>
-                    </VBox>
-                </content>
-            </Tab>
-            <Tab text="Pending Events">
-                <content>
-                    <VBox spacing="10">
-                        <padding>
-                            <Insets top="15"/>
-                        </padding>
-                        <Label text="Pending Actions" styleClass="section-header"/>
-                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
-                            <VBox fx:id="pendingListContainer" spacing="10"/>
-                        </ScrollPane>
-                    </VBox>
-                </content>
-            </Tab>
-        </tabs>
-    </TabPane>
-</VBox>
+        <!-- Custom Material Tab Bar -->
+        <HBox alignment="CENTER" style="-fx-border-color: #2D3748; -fx-border-width: 0 0 2 0;">
+            <VBox onMouseClicked="#switchToUpcoming" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="8" style="-fx-cursor: hand; -fx-padding: 10 0 0 0;">
+                <Label fx:id="lblUpcoming" text="Upcoming" style="-fx-text-fill: #00E5FF; -fx-font-weight: bold; -fx-font-size: 14;"/>
+                <Region fx:id="indUpcoming" prefHeight="3" prefWidth="150" style="-fx-background-color: #00E5FF;" maxWidth="Infinity"/>
+            </VBox>
+            
+            <VBox onMouseClicked="#switchToPending" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="8" style="-fx-cursor: hand; -fx-padding: 10 0 0 0;">
+                <Label fx:id="lblPending" text="Pending Events" style="-fx-text-fill: #8A95A5; -fx-font-weight: bold; -fx-font-size: 14;"/>
+                <Region fx:id="indPending" prefHeight="3" prefWidth="150" style="-fx-background-color: transparent;" maxWidth="Infinity"/>
+            </VBox>
+        </HBox>
+        
+        <!-- Main Content Area -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: #16202A;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <StackPane alignment="TOP_CENTER" style="-fx-padding: 20 0 20 0;">
+                <VBox fx:id="upcomingListContainer" spacing="12" visible="true" />
+                <VBox fx:id="pendingListContainer" spacing="12" visible="false" />
+            </StackPane>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Floating Action Button -->
+    <Button text="+" onAction="#handleAddClass" style="-fx-background-color: #00E5FF; -fx-text-fill: black; -fx-font-size: 28; -fx-font-weight: bold; -fx-background-radius: 50%; -fx-min-width: 56; -fx-min-height: 56; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 5); -fx-cursor: hand;" StackPane.alignment="BOTTOM_RIGHT">
+        <StackPane.margin>
+            <Insets right="35" bottom="35"/>
+        </StackPane.margin>
+    </Button>
+</StackPane>

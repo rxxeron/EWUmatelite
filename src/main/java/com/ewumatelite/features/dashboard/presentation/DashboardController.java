@@ -63,19 +63,25 @@ public class DashboardController {
         // Placeholder Name
         profileName.setText("User");
 
-        LocalDate now = LocalDate.now();
-        String todayFormatted = now.format(DateTimeFormatter.ofPattern("EEEE, MMM d"));
-        String todayDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        // 1. 8 PM Rule -> If past 20:00, show tomorrow's schedule
+        LocalDate targetDate = LocalDate.now();
+        if (hour >= 20) {
+            targetDate = targetDate.plusDays(1);
+        }
+
+        String todayFormatted = targetDate.format(DateTimeFormatter.ofPattern("EEEE, MMM d"));
+        String todayDate = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         
         dateLabel.setText(todayFormatted);
 
         com.ewumatelite.core.utils.LogExporter.log("ACTION: User " + uid + " opened dashboard for semester " + activeSem);
 
+        final LocalDate finalTargetDate = targetDate;
         new Thread(() -> {
             try {
                 JSONObject data = new AcademicRepository().getDashboardData(uid, activeSem, todayDate);
                 com.ewumatelite.core.utils.LogExporter.log("SUCCESS: Dashboard data fetched successfully.");
-                Platform.runLater(() -> populateUI(data, now));
+                Platform.runLater(() -> populateUI(data, finalTargetDate));
             } catch (Exception ex) {
                 com.ewumatelite.core.utils.LogExporter.log("ERROR: Failed to fetch dashboard data: " + ex.getMessage());
                 Platform.runLater(() -> {
@@ -86,7 +92,7 @@ public class DashboardController {
         }).start();
     }
 
-    private void populateUI(JSONObject data, LocalDate now) {
+    private void populateUI(JSONObject data, LocalDate targetDate) {
         // Update user nickname if fetched
         String nick = data.optString("nickname", "User");
         profileName.setText(nick);
@@ -95,21 +101,83 @@ public class DashboardController {
         tasksContainer.getChildren().clear();
 
         // 1. Build Schedule
-        String dayStr = now.getDayOfWeek().name();
+        String dayStr = targetDate.getDayOfWeek().name();
         dayStr = dayStr.substring(0, 1).toUpperCase() + dayStr.substring(1).toLowerCase();
 
-        JSONObject grid = data.optJSONObject("weekly_grid");
-        if (grid != null && grid.has(dayStr)) {
-            JSONArray classesObj = grid.optJSONArray(dayStr);
-            if (classesObj != null && classesObj.length() > 0) {
-                for (int i = 0; i < classesObj.length(); i++) {
-                    scheduleContainer.getChildren().add(createClassCard(classesObj.getJSONObject(i)));
+        boolean processedHoliday = false;
+
+        JSONObject holidayData = data.optJSONObject("holiday");
+        if (holidayData != null) {
+            String title = holidayData.optString("title", holidayData.optString("name", "")).toLowerCase();
+            String reason = holidayData.optString("name", "Holiday");
+            if (title.contains("swap") || title.contains("makeup")) {
+                // Determine day replacement like Flutter
+                String[] words = title.split(" ");
+                if (words.length > 0) {
+                    String swapDayRaw = words[words.length - 1];
+                    if (swapDayRaw.endsWith("s")) swapDayRaw = swapDayRaw.substring(0, swapDayRaw.length() - 1);
+                    dayStr = swapDayRaw.substring(0, 1).toUpperCase() + swapDayRaw.substring(1).toLowerCase();
                 }
-            } else {
+            } else if (!title.contains("makeup") && !title.contains("advising")) {
+                scheduleContainer.getChildren().add(createHolidayBanner(reason));
+                processedHoliday = true;
+            }
+        }
+
+        if (!processedHoliday) {
+            JSONObject grid = data.optJSONObject("weekly_grid");
+            JSONArray classesObj = grid != null ? grid.optJSONArray(dayStr) : null;
+            JSONArray exceptions = data.optJSONArray("exceptions");
+            
+            boolean hasClasses = false;
+
+            if (classesObj != null && classesObj.length() > 0) {
+                // O(n^2) filter for exceptions like cancellations
+                for (int i = 0; i < classesObj.length(); i++) {
+                    JSONObject c = classesObj.getJSONObject(i);
+                    String courseCode = c.optString("courseCode", c.optString("course_code"));
+                    
+                    boolean isCancelled = false;
+                    if (exceptions != null) {
+                        for (int j = 0; j < exceptions.length(); j++) {
+                            JSONObject ex = exceptions.getJSONObject(j);
+                            if ("cancel".equals(ex.optString("type")) && courseCode.equals(ex.optString("course_code"))) {
+                                isCancelled = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isCancelled) {
+                        scheduleContainer.getChildren().add(createClassCard(c));
+                        hasClasses = true;
+                    }
+                }
+            }
+
+            // Append manual and makeup exceptions
+            if (exceptions != null) {
+                for (int i = 0; i < exceptions.length(); i++) {
+                    JSONObject ex = exceptions.getJSONObject(i);
+                    String type = ex.optString("type");
+                    if ("makeup".equals(type) || "manual".equals(type)) {
+                        // Reshape into template format
+                        JSONObject mapped = new JSONObject();
+                        mapped.put("courseCode", ex.optString("course_code"));
+                        mapped.put("courseName", ex.optString("course_name"));
+                        mapped.put("room", ex.optString("room"));
+                        mapped.put("startTime", ex.optString("start_time"));
+                        mapped.put("endTime", ex.optString("end_time"));
+                        mapped.put("type", ex.optString("faculty")); // Fallback type logic not strictly typed here
+                        scheduleContainer.getChildren().add(createClassCard(mapped));
+                        hasClasses = true;
+                    }
+                }
+            }
+
+            if (!hasClasses) {
                 scheduleContainer.getChildren().add(createEmptyLabel("No classes scheduled for today."));
             }
-        } else {
-            scheduleContainer.getChildren().add(createEmptyLabel("No classes scheduled for today."));
         }
 
         // 2. Build Tasks
@@ -135,6 +203,23 @@ public class DashboardController {
     }
 
     // --- Dynamic Card Builders (Mimicking the visual style in native JavaFX) ---
+
+    private VBox createHolidayBanner(String reason) {
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(20));
+        box.setStyle("-fx-background-color: " + ACCENT_TEAL_DARK + "; -fx-background-radius: 12;");
+        
+        Label title = new Label("Chill!");
+        title.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px;");
+
+        Label subtitle = new Label("It's a " + reason + "!\nNo classes scheduled today.");
+        subtitle.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-text-alignment: center;");
+        subtitle.setAlignment(Pos.CENTER);
+
+        box.getChildren().addAll(title, subtitle);
+        return box;
+    }
 
     private HBox createClassCard(JSONObject c) {
         String type = c.optString("type", "Theory");

@@ -188,7 +188,7 @@ public class AcademicRepository {
         JSONObject cacheClear = new JSONObject();
         cacheClear.put("weekly_grid_cache", JSONObject.NULL);
         HttpRequest cacheReq = HttpRequest.newBuilder()
-            .uri(URI.create(SupabaseConfig.PROJECT_URL + "/rest/v1/user_semester_states?user_id=eq." + userId + "&semester_code=eq." + semesterCode))
+            .uri(URI.create(SupabaseConfig.PROJECT_URL + "/rest/v1/user_semester_states?user_id=eq." + userId + "&semester_code=eq." + semesterCode.replace(" ", "%20")))
             .header("apikey", SupabaseConfig.ANON_KEY)
             .header("Authorization", "Bearer " + getAuthToken())
             .header("Content-Type", "application/json")
@@ -242,12 +242,28 @@ public class AcademicRepository {
     // 2. Schedule Exceptions
     // 3. Top Tasks
     // 4. Enrollments (for the modal dropdown equivalent)
+    public JSONArray fetchUpcomingHolidays(String semesterCode, String startDate, String endDate) throws Exception {
+        String safeSemesterCode = semesterCode.toLowerCase().replace(" ", "");
+        String url = SupabaseConfig.PROJECT_URL + "/rest/v1/calendar_" + safeSemesterCode +
+                "?event_date=gte." + startDate + "&event_date=lte." + endDate;
+        
+        try {
+            return executeGetArray(buildGetRequest(url));
+        } catch (Exception e) {
+            System.err.println("Holiday fetch skipped: " + e.getMessage());
+            return new JSONArray();
+        }
+    }
+
     public JSONObject getDashboardData(String uid, String semesterCode, String dateStr) throws Exception {
         JSONObject dashboardData = new JSONObject();
         
+        // URL encode the semester code to avoid illegal character exceptions
+        String safeSemesterCode = semesterCode.replace(" ", "%20");
+
         // 1. User Semester States (Weekly Grid)
         String stateUrl = SupabaseConfig.PROJECT_URL + "/rest/v1/user_semester_states" +
-                "?user_id=eq." + uid + "&semester_code=eq." + semesterCode + "&select=weekly_grid_cache&limit=1";
+                "?user_id=eq." + uid + "&semester_code=eq." + safeSemesterCode + "&select=weekly_grid_cache&limit=1";
         try {
             JSONArray stateArr = executeGetArray(buildGetRequest(stateUrl));
             if (stateArr.length() > 0) {
@@ -265,6 +281,18 @@ public class AcademicRepository {
             dashboardData.put("exceptions", exArr);
         } catch (Exception e) {
              System.err.println("Dashboard exceptions fetch skipped: " + e.getMessage());
+        }
+
+        // 2.5 Holiday Fetch
+        String holidayUrl = SupabaseConfig.PROJECT_URL + "/rest/v1/calendar_" + semesterCode.toLowerCase().replace(" ", "") +
+                "?event_date=eq." + dateStr + "&limit=1";
+        try {
+            JSONArray holidayArr = executeGetArray(buildGetRequest(holidayUrl));
+            if (holidayArr.length() > 0) {
+                dashboardData.put("holiday", holidayArr.getJSONObject(0));
+            }
+        } catch (Exception e) {
+            System.err.println("Holiday fetch skipped (table might not exist): " + e.getMessage());
         }
 
         // 3. Active Tasks
