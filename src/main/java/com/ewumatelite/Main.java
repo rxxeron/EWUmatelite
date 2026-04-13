@@ -26,7 +26,12 @@ public class Main extends Application {
             }
         });
 
-        new com.ewumatelite.features.auth.presentation.LoginScreen(primaryStage).show();
+        // Remember me flow check
+        if (com.ewumatelite.core.config.SupabaseConfig.currentUserToken != null) {
+            new com.ewumatelite.features.dashboard.presentation.DashboardScreen(primaryStage, com.ewumatelite.core.config.SupabaseConfig.currentUserId, "Spring 2026").show();
+        } else {
+            new com.ewumatelite.features.auth.presentation.LoginScreen(primaryStage).show();
+        }
     }
 
     public static void main(String[] args) {

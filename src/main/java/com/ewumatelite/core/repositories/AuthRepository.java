@@ -29,6 +29,12 @@ public class AuthRepository {
             JSONObject resJson = new JSONObject(response.body());
             SupabaseConfig.currentUserToken = resJson.getString("access_token");
             SupabaseConfig.currentUserId = resJson.getJSONObject("user").getString("id");
+
+            // Persist the token to system preferences so the "Remember Me" works
+            java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(SupabaseConfig.class);
+            prefs.put("SUPABASE_JWT", SupabaseConfig.currentUserToken);
+            prefs.put("SUPABASE_UID", SupabaseConfig.currentUserId);
+
             return true;
         } else {
             return false;

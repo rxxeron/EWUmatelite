@@ -88,6 +88,13 @@ public class Sidebar {
         btnLogout.setMaxWidth(Double.MAX_VALUE);
         btnLogout.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Logged Out");
+            // Clear persistent auth state
+            com.ewumatelite.core.config.SupabaseConfig.currentUserToken = null;
+            com.ewumatelite.core.config.SupabaseConfig.currentUserId = null;
+            java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(com.ewumatelite.core.config.SupabaseConfig.class);
+            prefs.remove("SUPABASE_JWT");
+            prefs.remove("SUPABASE_UID");
+            
             new com.ewumatelite.features.auth.presentation.LoginScreen(stage).show();
         });
 

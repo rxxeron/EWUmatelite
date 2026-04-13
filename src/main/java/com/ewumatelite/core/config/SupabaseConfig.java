@@ -9,6 +9,13 @@ public class SupabaseConfig {
     // Store the authenticated user's JWT
     public static String currentUserToken = null;
     public static String currentUserId = null;
+
+    // Load persisted token on startup
+    static {
+        java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(SupabaseConfig.class);
+        currentUserToken = prefs.get("SUPABASE_JWT", null);
+        currentUserId = prefs.get("SUPABASE_UID", null);
+    }
 }
 
 
