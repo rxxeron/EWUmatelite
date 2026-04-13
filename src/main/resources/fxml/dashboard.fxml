@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="750.0" prefWidth="700.0" spacing="20.0" styleClass="content-area-root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ewumatelite.features.dashboard.presentation.DashboardController">
+   <padding>
+      <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+   </padding>
+
+   <!-- Profile Card -->
+   <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0" styleClass="card-container">
+      <Circle fill="#0EA5E9" radius="25.0" />
+      <VBox alignment="CENTER_LEFT" spacing="2.0">
+         <Label fx:id="greetingLabel" styleClass="label" text="Good Morning," />
+         <Label fx:id="profileName" styleClass="title-label" style="-fx-font-size: 20px;" text="User" />
+      </VBox>
+   </HBox>
+
+   <ScrollPane fitToWidth="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+      <content>
+         <VBox spacing="25.0" style="-fx-background-color: transparent;">
+            
+            <!-- Schedule Section -->
+            <VBox spacing="15.0">
+               <HBox alignment="BOTTOM_LEFT">
+                  <Label styleClass="title-label" style="-fx-font-size: 18px;" text="Today's Schedule" />
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <Label fx:id="dateLabel" styleClass="label" style="-fx-font-size: 13px;" text="Date" />
+               </HBox>
+               <VBox fx:id="scheduleContainer" spacing="15.0">
+                  <Label fx:id="loadingLabel" styleClass="label" text="Loading Dashboard Data..." />
+               </VBox>
+            </VBox>
+
+            <!-- Tasks Section -->
+            <VBox spacing="12.0">
+               <HBox alignment="BOTTOM_LEFT">
+                  <Label styleClass="title-label" style="-fx-font-size: 18px;" text="Upcoming Tasks" />
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <Label onMouseClicked="#onSeeAllTasksClicked" styleClass="text-button" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="See All" />
+               </HBox>
+               <VBox fx:id="tasksContainer" spacing="12.0" />
+            </VBox>
+
+         </VBox>
+      </content>
+   </ScrollPane>
+</VBox>

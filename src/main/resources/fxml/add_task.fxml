@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="400.0" spacing="15.0" style="-fx-background-color: #1E293B; -fx-background-radius: 10; -fx-padding: 24;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ewumatelite.features.tasks.presentation.AddTaskController">
+   <children>
+      <Label style="-fx-text-fill: #FFFFFF; -fx-font-size: 20px; -fx-font-weight: bold;" text="Create New Task" />
+      
+      <VBox spacing="8.0">
+         <children>
+            <Label style="-fx-text-fill: #8A95A5; -fx-font-size: 14px;" text="Title" />
+            <TextField fx:id="titleField" promptText="Enter task title" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #475569; -fx-background-radius: 8; -fx-padding: 10;" />
+         </children>
+      </VBox>
+
+      <HBox spacing="15.0">
+         <children>
+            <VBox HBox.hgrow="ALWAYS" spacing="8.0">
+               <children>
+                  <Label style="-fx-text-fill: #8A95A5; -fx-font-size: 14px;" text="Course Code (Optional)" />
+                  <ComboBox fx:id="courseComboBox" maxWidth="1.7976931348623157E308" promptText="Select Course" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-background-radius: 8; -fx-padding: 5;" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS" spacing="8.0">
+               <children>
+                  <Label style="-fx-text-fill: #8A95A5; -fx-font-size: 14px;" text="Task Type" />
+                  <ComboBox fx:id="typeComboBox" maxWidth="1.7976931348623157E308" promptText="Select type" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-background-radius: 8; -fx-padding: 5;" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+
+      <HBox spacing="15.0">
+         <children>
+            <VBox HBox.hgrow="ALWAYS" spacing="8.0">
+               <children>
+                  <Label style="-fx-text-fill: #8A95A5; -fx-font-size: 14px;" text="Due Date" />
+                  <DatePicker fx:id="datePicker" maxWidth="1.7976931348623157E308" promptText="Select due date" style="-fx-background-radius: 8; -fx-padding: 5;" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER" spacing="8.0">
+               <children>
+                  <Label style="-fx-text-fill: #8A95A5; -fx-font-size: 14px;" text="Time" />
+                  <HBox spacing="5.0" alignment="CENTER_LEFT">
+                     <children>
+                        <ComboBox fx:id="hourComboBox" prefWidth="70.0" promptText="HH" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-background-radius: 8; -fx-padding: 5;" />
+                        <Label text=":" style="-fx-text-fill: #FFFFFF; -fx-font-weight: bold;" />
+                        <ComboBox fx:id="minuteComboBox" prefWidth="70.0" promptText="MM" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-background-radius: 8; -fx-padding: 5;" />
+                        <ComboBox fx:id="ampmComboBox" prefWidth="80.0" promptText="AM/PM" style="-fx-background-color: #0F1524; -fx-text-fill: #FFFFFF; -fx-background-radius: 8; -fx-padding: 5;" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      
+      <HBox alignment="CENTER_RIGHT" spacing="15.0">
+         <children>
+            <Button fx:id="cancelBtn" onAction="#onCancel" style="-fx-background-color: transparent; -fx-text-fill: #8A95A5; -fx-font-weight: bold; -fx-cursor: hand;" text="Cancel" />
+            <Button fx:id="saveBtn" onAction="#onSave" style="-fx-background-color: #00B4D8; -fx-text-fill: #FFFFFF; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;" text="Save Task" />
+         </children>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>
