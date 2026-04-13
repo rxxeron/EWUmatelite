@@ -1,6 +1,7 @@
 package com.ewumatelite.features.sidebar.presentation;
 
 import com.ewumatelite.features.dashboard.presentation.DashboardScreen;
+import com.ewumatelite.features.schedule.presentation.ScheduleScreen;
 import com.ewumatelite.features.enrollment.presentation.EnrollmentScreen;
 import com.ewumatelite.features.tasks.presentation.TasksScreen;
 import com.ewumatelite.core.repositories.AcademicRepository;
@@ -65,6 +66,12 @@ public class Sidebar {
             }).start();
         });
 
+        Button btnSchedule = createTabButton("Manage Schedule", activeScreen.equals("Manage Schedule"));
+        btnSchedule.setOnAction(e -> {
+            com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Manage Schedule");
+            new ScheduleScreen(stage, uid, activeSem).show();
+        });
+
         Button btnTasks = createTabButton("Tasks", activeScreen.equals("Tasks"));
         btnTasks.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Tasks");
@@ -98,7 +105,8 @@ public class Sidebar {
             new com.ewumatelite.features.auth.presentation.LoginScreen(stage).show();
         });
 
-        sidebar.getChildren().addAll(header, btnDashboard, btnEnrollment, btnTasks, btnSemesterProgress, btnProfile);
+        // Spacer pushes logout button to the bottom
+        sidebar.getChildren().addAll(header, btnDashboard, btnEnrollment, btnSchedule, btnTasks, btnSemesterProgress, btnProfile);
         
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
         VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);

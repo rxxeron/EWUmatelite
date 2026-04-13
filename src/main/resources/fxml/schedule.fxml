@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ewumatelite.features.schedule.presentation.ScheduleController" styleClass="main-content-bg">
+    <padding>
+        <Insets top="20" right="30" bottom="20" left="30"/>
+    </padding>
+
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox>
+            <Label text="Manage Schedule" styleClass="screen-title"/>
+            <Label text="View upcoming classes and pending events" styleClass="screen-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <TabPane VBox.vgrow="ALWAYS" styleClass="custom-tab-pane" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+            <Tab text="Upcoming">
+                <content>
+                    <VBox spacing="10">
+                        <padding>
+                            <Insets top="15"/>
+                        </padding>
+                        <Label text="Upcoming Schedule" styleClass="section-header"/>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+                            <VBox fx:id="upcomingListContainer" spacing="10"/>
+                        </ScrollPane>
+                    </VBox>
+                </content>
+            </Tab>
+            <Tab text="Pending Events">
+                <content>
+                    <VBox spacing="10">
+                        <padding>
+                            <Insets top="15"/>
+                        </padding>
+                        <Label text="Pending Actions" styleClass="section-header"/>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+                            <VBox fx:id="pendingListContainer" spacing="10"/>
+                        </ScrollPane>
+                    </VBox>
+                </content>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>
