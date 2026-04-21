@@ -1,18 +1,11 @@
 package com.ewumatelite;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 import com.ewumatelite.features.auth.presentation.RegistrationScreen;
-
 public class Main extends Application {
-
     @Override
     public void start(Stage primaryStage) {
-        
-        // Save the log file to the User's Documents folder
         com.ewumatelite.core.utils.LogExporter.log("Application Session started explicitly by the User.");
-
-        // Global Event Listener to capture EVERY UI Action and Mouse Click across all scenes
         primaryStage.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getTarget() instanceof javafx.scene.Node) {
                 javafx.scene.Node target = (javafx.scene.Node) event.getTarget();
@@ -25,17 +18,13 @@ public class Main extends Application {
                 com.ewumatelite.core.utils.LogExporter.log("GLOBAL UI ACTION: User clicked " + targetInfo);
             }
         });
-
-        // Remember me flow check
         if (com.ewumatelite.core.config.SupabaseConfig.currentUserToken != null) {
             new com.ewumatelite.features.dashboard.presentation.DashboardScreen(primaryStage, com.ewumatelite.core.config.SupabaseConfig.currentUserId, "Spring 2026").show();
         } else {
             new com.ewumatelite.features.auth.presentation.LoginScreen(primaryStage).show();
         }
     }
-
     public static void main(String[] args) {
         launch(args);
     }
 }
-

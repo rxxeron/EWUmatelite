@@ -1,10 +1,8 @@
 package com.ewumatelite.core.utils;
-
 import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 public class MarksCalculator {
     public static double calculateQuizValue(JSONArray qArr, String strategy, int n, double maxMark) {
         if (qArr == null || qArr.length() == 0) return 0.0;
@@ -13,7 +11,6 @@ public class MarksCalculator {
             marks.add(qArr.optDouble(i, 0.0));
         }
         marks.sort(Collections.reverseOrder());
-
         double total = 0.0;
         if ("best_one".equals(strategy)) {
             total = marks.get(0);
@@ -36,7 +33,6 @@ public class MarksCalculator {
         }
         return total > maxMark ? maxMark : total;
     }
-
     public static String calculateGrade(double obtained, double distributed) {
         if (distributed <= 0) return "N/A";
         double percentage = (obtained / distributed) * 100;

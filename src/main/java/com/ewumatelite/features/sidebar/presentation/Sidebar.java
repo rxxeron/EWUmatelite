@@ -1,5 +1,4 @@
 package com.ewumatelite.features.sidebar.presentation;
-
 import com.ewumatelite.features.dashboard.presentation.DashboardScreen;
 import com.ewumatelite.features.schedule.presentation.ScheduleScreen;
 import com.ewumatelite.features.enrollment.presentation.EnrollmentScreen;
@@ -14,42 +13,34 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import javafx.geometry.Insets;
-
 public class Sidebar {
     private final Stage stage;
     private final String uid;
     private final String activeSem;
     private final String activeScreen;
-
     public Sidebar(Stage stage, String uid, String activeSem, String activeScreen) {
         this.stage = stage;
         this.uid = uid;
         this.activeSem = activeSem;
         this.activeScreen = activeScreen;
     }
-
     public VBox getView() {
         VBox sidebar = new VBox(20);
         sidebar.setPrefWidth(240);
         sidebar.getStyleClass().add("sidebar");
         sidebar.setAlignment(Pos.TOP_CENTER);
-
         Text appTitle = new Text("EWU Mate");
         appTitle.getStyleClass().add("sidebar-title");
-        
         Text semText = new Text(activeSem);
         semText.getStyleClass().add("sidebar-subtitle");
-        
         VBox header = new VBox(5, appTitle, semText);
         header.setAlignment(Pos.CENTER);
         header.getStyleClass().add("sidebar-header");
-
         Button btnDashboard = createTabButton("Dashboard", activeScreen.equals("Dashboard"));
         btnDashboard.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Dashboard");
             new DashboardScreen(stage, uid, activeSem).show();
         });
-
         Button btnEnrollment = createTabButton("Course Browser", activeScreen.equals("Enrollment"));
         btnEnrollment.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Course Browser");
@@ -65,56 +56,44 @@ public class Sidebar {
                 }
             }).start();
         });
-
         Button btnSchedule = createTabButton("Manage Schedule", activeScreen.equals("Manage Schedule"));
         btnSchedule.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Manage Schedule");
             new ScheduleScreen(stage, uid, activeSem).show();
         });
-
         Button btnTasks = createTabButton("Tasks", activeScreen.equals("Tasks"));
         btnTasks.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Tasks");
             new TasksScreen(stage, uid, activeSem).show();
         });
-
         Button btnSemesterProgress = createTabButton("Semester Progress", activeScreen.equals("Semester Progress"));
         btnSemesterProgress.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Semester Progress");
             new com.ewumatelite.features.semester_progress.presentation.SemesterProgressScreen(stage, uid, activeSem).show();
         });
-        
         Button btnProfile = createTabButton("Profile", activeScreen.equals("Profile"));
         btnProfile.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Navigated to Profile");
             new com.ewumatelite.features.profile.presentation.ProfileScreen(stage, uid, activeSem).show();
         });
-
         Button btnLogout = new Button("Logout");
         btnLogout.getStyleClass().add("logout-button");
         btnLogout.setMaxWidth(Double.MAX_VALUE);
         btnLogout.setOnAction(e -> {
             com.ewumatelite.core.utils.LogExporter.log("ACTION: User Logged Out");
-            // Clear persistent auth state
             com.ewumatelite.core.config.SupabaseConfig.currentUserToken = null;
             com.ewumatelite.core.config.SupabaseConfig.currentUserId = null;
             java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(com.ewumatelite.core.config.SupabaseConfig.class);
             prefs.remove("SUPABASE_JWT");
             prefs.remove("SUPABASE_UID");
-            
             new com.ewumatelite.features.auth.presentation.LoginScreen(stage).show();
         });
-
-        // Spacer pushes logout button to the bottom
         sidebar.getChildren().addAll(header, btnDashboard, btnEnrollment, btnSchedule, btnTasks, btnSemesterProgress, btnProfile);
-        
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
         VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         sidebar.getChildren().addAll(spacer, btnLogout);
-
         return sidebar;
     }
-    
     private Button createTabButton(String text, boolean isActive) {
         Button btn = new Button(text);
         btn.setMaxWidth(Double.MAX_VALUE);
